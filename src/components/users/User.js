@@ -1,108 +1,105 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import Spinner from '../layout/Spinner';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Repos from '../repos/Repos';
 
-export class User extends Component {
-	componentDidMount() {
-		this.props.getUser(this.props.match.params.login);
-		this.props.getUserRepos(this.props.match.params.login);
-	}
+const User = ({ user, loading, getUser, getUserRepos, repos, match }) => {
+	useEffect(() => {
+		getUser(match.params.login);
+		getUserRepos(match.params.login);
+		//eslint-disable-next-line
+	}, []);
 
-	static propTypes = {
-		loading: PropTypes.bool,
-		user: PropTypes.object.isRequired,
-		getUser: PropTypes.func.isRequired,
-		getUserRepos: PropTypes.func.isRequired,
-		repos: PropTypes.array.isRequired,
-	};
+	const {
+		name,
+		avatar_url,
+		location,
+		bio,
+		login,
+		html_url,
+		followers,
+		following,
+		public_repos,
+		public_gists,
+		hireable,
+		company,
+		blog,
+	} = user;
 
-	render() {
-		const {
-			name,
-			avatar_url,
-			location,
-			bio,
-			login,
-			html_url,
-			followers,
-			following,
-			public_repos,
-			public_gists,
-			hireable,
-			company,
-			blog,
-		} = this.props.user;
+	if (loading) return <Spinner />;
 
-		const { loading, repos } = this.props;
-
-		if (loading) return <Spinner />;
-
-		return (
-			<>
-				<Link to='/' className='btn btn-light'>
-					Back to Search
-				</Link>
-				Hireable: {''}
-				{hireable ? (
-					<i className='fas fa-check text-success' />
-				) : (
-					<i className='fas fa-times-circle text-danger' />
-				)}
-				<div className='card grid-2'>
-					<div className='all-center'>
-						<img
-							src={avatar_url}
-							className='round-img'
-							alt=''
-							style={{ width: '150px' }}
-						/>
-						<h1>{name}</h1>
-						<p>{location}</p>
-					</div>
-					<div>
-						{bio && (
+	return (
+		<>
+			<Link to='/' className='btn btn-light'>
+				Back to Search
+			</Link>
+			Hireable: {''}
+			{hireable ? (
+				<i className='fas fa-check text-success' />
+			) : (
+				<i className='fas fa-times-circle text-danger' />
+			)}
+			<div className='card grid-2'>
+				<div className='all-center'>
+					<img
+						src={avatar_url}
+						className='round-img'
+						alt=''
+						style={{ width: '150px' }}
+					/>
+					<h1>{name}</h1>
+					<p>{location}</p>
+				</div>
+				<div>
+					{bio && (
+						<>
+							<h3>{bio}</h3>
+						</>
+					)}
+					<a href={html_url} className='btn btn-dark my-1'>
+						Visit Github Profile
+					</a>
+					<li>
+						{login && (
 							<>
-								<h3>{bio}</h3>
+								<strong>Username: {login}</strong>
 							</>
 						)}
-						<a href={html_url} className='btn btn-dark my-1'>
-							Visit Github Profile
-						</a>
-						<li>
-							{login && (
-								<>
-									<strong>Username: {login}</strong>
-								</>
-							)}
-						</li>
-						<li>
-							{company && (
-								<>
-									<strong>Company: {company}</strong>
-								</>
-							)}
-						</li>
-						<li>
-							{blog && (
-								<>
-									<strong>Website: {blog}</strong>
-								</>
-							)}
-						</li>
-					</div>
+					</li>
+					<li>
+						{company && (
+							<>
+								<strong>Company: {company}</strong>
+							</>
+						)}
+					</li>
+					<li>
+						{blog && (
+							<>
+								<strong>Website: {blog}</strong>
+							</>
+						)}
+					</li>
 				</div>
-				<div className='card text-center'>
-					<div className='badge badge-primary'>Followers: {followers}</div>
-					<div className='badge badge-success'>Following: {following}</div>
-					<div className='badge badge-light'>Public Repos: {public_repos}</div>
-					<div className='badge badge-dark'>Public Gists: {public_gists}</div>
-				</div>
-				<Repos repos={repos} />
-			</>
-		);
-	}
-}
+			</div>
+			<div className='card text-center'>
+				<div className='badge badge-primary'>Followers: {followers}</div>
+				<div className='badge badge-success'>Following: {following}</div>
+				<div className='badge badge-light'>Public Repos: {public_repos}</div>
+				<div className='badge badge-dark'>Public Gists: {public_gists}</div>
+			</div>
+			<Repos repos={repos} />
+		</>
+	);
+};
+
+User.propTypes = {
+	loading: PropTypes.bool,
+	user: PropTypes.object.isRequired,
+	getUser: PropTypes.func.isRequired,
+	getUserRepos: PropTypes.func.isRequired,
+	repos: PropTypes.array.isRequired,
+};
 
 export default User;
